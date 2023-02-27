@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import IBMPlexSans from "../assets/fonts/IBMPlexSans-Regular.ttf";
 import { Dimensions } from "react-native";
 import { useFonts } from "expo-font";
+import axios from "axios";
 
 const screenWidth = Dimensions.get("window").width;
 const HeartDiseasePredictorScreen = () => {
@@ -34,11 +35,49 @@ const HeartDiseasePredictorScreen = () => {
   if (!loaded) {
     return null;
   }
-  const handlePredict = () => {
+  const handlePredict = async () => {
     // Perform prediction logic here
-    console.log(
-      `Predicting with age: ${age}, sex: ${sex}, cp: ${cp}, trestbps: ${trestbps}, chol: ${chol}, fbs: ${fbs}, restecg: ${restecg}, thalach: ${thalach}, exang: ${exang}, oldpeak: ${oldpeak}, slope: ${slope}, ca: ${ca}, thal: ${thal}`
-    );
+    if (
+      !age ||
+      !sex ||
+      !cp ||
+      !trestbps ||
+      !chol ||
+      !fbs ||
+      !restecg ||
+      !thalach ||
+      !exang ||
+      !oldpeak ||
+      !slope ||
+      !ca ||
+      !thal
+    ) {
+      alert("All fields are required ");
+    } else {
+      try {
+        const response = await axios.post(
+          "https://ea0a-183-82-28-94.in.ngrok.io/predict",
+          {
+            age: age,
+            sex: sex,
+            cp: cp,
+            trestbps: trestbps,
+            chol: chol,
+            fbs: fbs,
+            restecg: restecg,
+            thalach: thalach,
+            exang: exang,
+            oldpeak: oldpeak,
+            slope: slope,
+            ca: ca,
+            thal: thal,
+          }
+        );
+        alert(response);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
   const handleSubmit = () => {
     // Perform submission logic here

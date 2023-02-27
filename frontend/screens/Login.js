@@ -6,21 +6,29 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
 } from "react-native";
+import axios from "axios";
 
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (!username || !password) {
-      alert("Please enter both username and password.");
-      return;
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert("All fields are required ");
+    } else {
+      try {
+        const response = await axios.post(
+          "https://ea0a-183-82-28-94.in.ngrok.io/login",
+          {
+            email: email,
+            password: password,
+          }
+        );
+        navigation.navigate("HeartDiseasePredictor");
+      } catch (error) {
+        console.log(error);
+      }
     }
-    // Perform login logic here
-    console.log(
-      `Logged in with username: ${username} and password: ${password}`
-    );
-    navigation.navigate("HeartDiseasePredictor");
   };
 
   return (
@@ -28,9 +36,9 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.heading}>Login</Text>
       <TextInput
         style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Username"
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Email"
       />
       <TextInput
         style={styles.input}

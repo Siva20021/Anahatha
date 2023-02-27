@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import psycopg2
 import bcrypt
@@ -9,7 +10,19 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 heart_data = pd.read_csv('heart_disease_data.csv')
 app = FastAPI()
-
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Database connection
 conn = psycopg2.connect(
     host="localhost",
@@ -46,6 +59,13 @@ class HeartDiseaseInput(BaseModel):
     ca: int
     thal: int
 
+# LoginUser model
+
+
+class LoginUser(BaseModel):
+    email: str
+    password: str
+
 # Signup endpoint
 
 
@@ -75,7 +95,7 @@ def signup(user: User):
 
 
 @app.post("/login")
-def login(user: User):
+def login(user: LoginUser):
     cursor = conn.cursor()
 
     # Retrieve user from database

@@ -6,25 +6,38 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import axios from "axios";
 
 const Signup = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [name, setName] = useState("");
 
-  const handleSignup = () => {
-    // Perform login logic here
-    if (!username || !password || !age || !sex || !name) {
-      alert(
-        "Please enter every fields Since all the fields are required and mandatory"
-      );
-      return;
+  const handleSignup = async () => {
+    // Define the user object with the required fields
+    if (!email || !password || !age || !gender || !name) {
+      alert("All fields are required ");
+    } else {
+      try {
+        const response = await axios.post(
+          "https://ea0a-183-82-28-94.in.ngrok.io/signup",
+          {
+            email: email,
+            password: password,
+            age: age,
+            sex: gender,
+            name: name,
+          }
+        );
+        navigation.navigate("HeartDiseasePredictor");
+      } catch (error) {
+        console.log(error);
+      }
     }
-    console.log(
-      `Logged in with username: ${username} and password: ${password}`
-    );
+
+    // Make the POST request to the /signup endpoint
   };
 
   return (
@@ -32,9 +45,9 @@ const Signup = () => {
       <Text style={styles.heading}>Signup</Text>
       <TextInput
         style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Username"
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Email"
       />
       <TextInput
         style={styles.input}
@@ -55,7 +68,6 @@ const Signup = () => {
           style={styles.input2}
           value={gender}
           onChangeText={setGender}
-          keyboardType="numeric"
           placeholder="sex"
         />
       </View>
@@ -89,6 +101,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
   },
+
   Row: {
     flexDirection: "row",
     gap: 70,
