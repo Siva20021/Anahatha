@@ -16,6 +16,12 @@ const Signup = () => {
 
   const handleSignup = () => {
     // Perform login logic here
+    if (!username || !password || !age || !sex || !name) {
+      alert(
+        "Please enter every fields Since all the fields are required and mandatory"
+      );
+      return;
+    }
     console.log(
       `Logged in with username: ${username} and password: ${password}`
     );
@@ -104,7 +110,7 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     height: 50,
-    backgroundColor: "#2196f3",
+    backgroundColor: "#82AAE3",
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",

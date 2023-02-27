@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   StyleSheet,
 } from "react-native";
 
@@ -12,6 +12,10 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
+    if (!username || !password) {
+      alert("Please enter both username and password.");
+      return;
+    }
     // Perform login logic here
     console.log(
       `Logged in with username: ${username} and password: ${password}`
@@ -35,18 +39,15 @@ const LoginScreen = ({ navigation }) => {
         placeholder="Password"
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={handleLogin}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
+        </View>
+      </TouchableWithoutFeedback>
       <Text style={styles.h1}>If you are a new User? </Text>
-      <TouchableOpacity>
-        <Text
-          style={styles.signupText}
-          onPress={() => navigation.navigate("Signup")}
-        >
-          Signup
-        </Text>
-      </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={() => navigation.navigate("Signup")}>
+        <Text style={styles.signupText}>Signup</Text>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     height: 50,
-    backgroundColor: "#2196f3",
+    backgroundColor: "#82AAE3",
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
