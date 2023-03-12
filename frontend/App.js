@@ -15,6 +15,7 @@ import FrontScreen from "./screens/FrontScreen";
 import Login from "./screens/Login";
 import Signup from "./screens/Signup";
 import Profile from "./screens/Profile";
+import AskDoctor from "./screens/AskDoctor";
 
 export default function App() {
   return (
@@ -56,6 +57,7 @@ export default function App() {
                     ),
                   }}
                 />
+
                 <Tab.Screen
                   name="Profile"
                   component={Profile}
@@ -64,6 +66,21 @@ export default function App() {
                     tabBarIcon: ({ color, size }) => (
                       <Ionicons
                         name="person-outline"
+                        size={size}
+                        color={color}
+                      />
+                    ),
+                  }}
+                />
+
+                <Tab.Screen
+                  name="Ask Doctor"
+                  component={AskDoctor}
+                  options={{
+                    headerShown: false,
+                    tabBarIcon: ({ color, size }) => (
+                      <Ionicons
+                        name="medkit-outline"
                         size={size}
                         color={color}
                       />

@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
 from sklearn.metrics import accuracy_score
 heart_data = pd.read_csv('heart_disease_data.csv')
 app = FastAPI()
@@ -88,8 +90,14 @@ def signup(user: User):
         (user.email, hashed_password.decode(), user.age, user.sex, user.name)
     )
     conn.commit()
-
-    return {"message": "User created successfully"}
+    user_data = {
+        "email": user.email,
+        "password": user.password,
+        "age": user.age,
+        "sex": user.sex,
+        "name": user.name
+    }
+    return {"data": user_data}
 
 # Login endpoint
 
@@ -100,7 +108,7 @@ def login(user: LoginUser):
 
     # Retrieve user from database
     cursor.execute(
-        "SELECT email, password FROM users WHERE email=%s", (user.email,))
+        "SELECT email, password, age, sex, name FROM users WHERE email=%s", (user.email,))
     db_user = cursor.fetchone()
 
     if db_user is None:
@@ -109,13 +117,18 @@ def login(user: LoginUser):
 
     # Verify password
     if bcrypt.checkpw(user.password.encode(), db_user[1].encode()):
-        return {"message": "Login successful"}
+        # Return user data
+        return {
+            "email": db_user[0],
+            "age": db_user[2],
+            "sex": db_user[3],
+            "name": db_user[4]
+        }
     else:
         raise HTTPException(
             status_code=400, detail="Incorrect email or password")
 
 
-# Predict API endpoint
 @app.post("/predict")
 def predict(data: HeartDiseaseInput):
     # Splitting the Features and the Target
@@ -126,14 +139,41 @@ def predict(data: HeartDiseaseInput):
     X_train, X_test, Y_train, Y_test = train_test_split(
         X, Y, test_size=0.2, stratify=Y, random_state=2)
 
+    # Scale the data
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
     # Model Training
-    model = LogisticRegression()
+    model = LogisticRegression(max_iter=1000)
     model.fit(X_train, Y_train)
 
     # Make the prediction
     input_data = np.asarray(list(data.dict().values()))
+    input_data = input_data.astype(int)
     input_data_reshaped = input_data.reshape(1, -1)
+    input_data_reshaped = scaler.transform(input_data_reshaped)
     prediction = model.predict(input_data_reshaped)
+
+    # Insert a new row into the testreports table
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO testreports (
+            age, sex, cp, trestbps, chol, fbs, restecg, thalach,
+            exang, oldpeak, slope, ca, thal, email, prediction
+        )
+        VALUES (
+             %s, %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s, %s::integer
+        );
+    """, (
+        data.age, data.sex, data.cp, data.trestbps, data.chol,
+        data.fbs, data.restecg, data.thalach, data.exang, data.oldpeak,
+        data.slope, data.ca, data.thal, "test@gmail.com", int(prediction[0])
+
+    ))
+    conn.commit()
+    cursor.close()
 
     # Return the result
     if prediction[0] == 1:

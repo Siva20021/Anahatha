@@ -1,14 +1,19 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   View,
   Text,
   TextInput,
   TouchableWithoutFeedback,
   StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import axios from "axios";
+import { loginStart, loginSuccess } from "../redux/userSlice";
 
 const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,13 +22,16 @@ const LoginScreen = ({ navigation }) => {
       alert("All fields are required ");
     } else {
       try {
+        dispatch(loginStart());
         const response = await axios.post(
-          "https://ea0a-183-82-28-94.in.ngrok.io/login",
+          "https://3586-183-82-24-36.in.ngrok.io/login",
           {
             email: email,
             password: password,
           }
         );
+        console.log(response.data);
+        dispatch(loginSuccess(response.data));
         navigation.navigate("HeartDiseasePredictor");
       } catch (error) {
         console.log(error);
@@ -33,6 +41,10 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <ImageBackground
+        source={require("../assets/doctor.png")}
+        style={styles.loginImage}
+      ></ImageBackground>
       <Text style={styles.heading}>Login</Text>
       <TextInput
         style={styles.input}
@@ -47,15 +59,15 @@ const LoginScreen = ({ navigation }) => {
         placeholder="Password"
         secureTextEntry
       />
-      <TouchableWithoutFeedback onPress={handleLogin}>
+      <TouchableOpacity onPress={handleLogin}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <Text style={styles.h1}>If you are a new User? </Text>
-      <TouchableWithoutFeedback onPress={() => navigation.navigate("Signup")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
         <Text style={styles.signupText}>Signup</Text>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -84,7 +96,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    width: "100%",
+    width: 200,
     height: 50,
     backgroundColor: "#82AAE3",
     borderRadius: 5,
@@ -102,6 +114,12 @@ const styles = StyleSheet.create({
   },
   signupText: {
     fontSize: 20,
+  },
+  loginImage: {
+    position: "relative",
+    height: 300,
+    width: 300,
+    marginBottom: 40,
   },
 });
 

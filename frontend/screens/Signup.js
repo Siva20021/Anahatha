@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   View,
   Text,
@@ -7,8 +8,10 @@ import {
   StyleSheet,
 } from "react-native";
 import axios from "axios";
+import { loginStart, loginSuccess } from "../redux/userSlice";
 
-const Signup = () => {
+const Signup = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
@@ -21,8 +24,9 @@ const Signup = () => {
       alert("All fields are required ");
     } else {
       try {
+        dispatch(loginStart());
         const response = await axios.post(
-          "https://ea0a-183-82-28-94.in.ngrok.io/signup",
+          "https://3586-183-82-24-36.in.ngrok.io/signup",
           {
             email: email,
             password: password,
@@ -31,6 +35,8 @@ const Signup = () => {
             name: name,
           }
         );
+        console.log(response.data.data);
+        dispatch(loginSuccess(response.data.data));
         navigation.navigate("HeartDiseasePredictor");
       } catch (error) {
         console.log(error);

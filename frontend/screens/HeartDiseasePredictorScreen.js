@@ -56,7 +56,7 @@ const HeartDiseasePredictorScreen = () => {
     } else {
       try {
         const response = await axios.post(
-          "https://ea0a-183-82-28-94.in.ngrok.io/predict",
+          "https://3586-183-82-24-36.in.ngrok.io/predict",
           {
             age: age,
             sex: sex,
@@ -73,7 +73,8 @@ const HeartDiseasePredictorScreen = () => {
             thal: thal,
           }
         );
-        alert(response);
+        console.log(response.data.result);
+        alert(`Prediction Result: ${response.data.result}`);
       } catch (error) {
         console.log(error);
       }
