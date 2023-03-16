@@ -16,6 +16,8 @@ import Login from "./screens/Login";
 import Signup from "./screens/Signup";
 import Profile from "./screens/Profile";
 import AskDoctor from "./screens/AskDoctor";
+import VerifyDoctor from "./screens/VerifyDoctor";
+import VerificationSuccess from "./screens/VerificationSuccess";
 
 export default function App() {
   return (
@@ -90,6 +92,16 @@ export default function App() {
               </Tab.Navigator>
             )}
           </Stack.Screen>
+          <Stack.Screen
+            name="Doctor Verification"
+            component={VerifyDoctor}
+            options={{ headerShown: false }}
+          ></Stack.Screen>
+          <Stack.Screen
+            name="VerificationSuccess"
+            component={VerificationSuccess}
+            options={{ headerShown: false }}
+          ></Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

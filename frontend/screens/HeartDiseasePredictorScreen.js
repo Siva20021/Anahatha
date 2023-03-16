@@ -56,7 +56,7 @@ const HeartDiseasePredictorScreen = () => {
     } else {
       try {
         const response = await axios.post(
-          "https://3586-183-82-24-36.in.ngrok.io/predict",
+          "https://c51a-183-82-27-97.in.ngrok.io/predict",
           {
             age: age,
             sex: sex,

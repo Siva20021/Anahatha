@@ -1,11 +1,14 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 
-const AskDoctor = () => {
+const AskDoctor = ({ navigation }) => {
+  const doctorVerify = () => {
+    navigation.navigate("Doctor Verification");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={doctorVerify}>
           <Text style={styles.buttonText}>Doctor</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>

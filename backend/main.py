@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
+from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import psycopg2
 import bcrypt
 import numpy as np
 import pandas as pd
+import random
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
@@ -67,8 +69,34 @@ class HeartDiseaseInput(BaseModel):
 class LoginUser(BaseModel):
     email: str
     password: str
+    post_id: int
 
+
+class Post(BaseModel):
+    email: str
+    title: str
+    body: str
+    post_id: Optional[int]
 # Signup endpoint
+
+
+class Comment(BaseModel):
+
+    name: str
+    role: str
+    body: str
+    post_id: Optional[int]
+    comment_id: Optional[int]
+    replies_count: Optional[int] = 0
+
+
+class Reply(BaseModel):
+    name: str
+    role: str
+    body: str
+    post_id: Optional[int]
+    comment_id: Optional[int]
+    reply_id: Optional[int]
 
 
 @app.post("/signup")
@@ -180,3 +208,130 @@ def predict(data: HeartDiseaseInput):
         return {"result": "Heart Defect"}
     else:
         return {"result": "No Heart Defect"}
+
+
+@app.post("/post")
+def create_post(post: Post):
+    def generate_post_id():
+        while True:
+            post_id = random.randint(100000, 999999)
+            cursor.execute(
+                "SELECT post_id FROM posts WHERE post_id = %s", (post_id,))
+            if cursor.fetchone() is None:
+                return post_id
+
+    cursor = conn.cursor()
+    post_id = generate_post_id()
+    cursor.execute("""INSERT INTO posts (email,title, body, post_id) VALUES (%s,%s, %s, %s);""",
+                   (post.email, post.title, post.body, post_id))
+    conn.commit()
+    cursor.close()
+    return {"data": post}
+
+
+@app.get("/post")
+def get_all_posts():
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM posts")
+    posts = cursor.fetchall()
+    cursor.close()
+    return {"data": posts}
+
+
+@app.get("/post/{post_id}")
+def get_post_by_id(post_id: int):
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM posts WHERE post_id = %s", (post_id,))
+    post = cursor.fetchone()
+    cursor.close()
+    if post:
+        return {"data": post}
+    else:
+        return {"message": "Post not found"}
+
+
+@app.delete("/post/{post_id}")
+def delete_post(post_id: int):
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM posts WHERE post_id = %s", (post_id,))
+    conn.commit()
+    cursor.close()
+    return {"message": f"Post {post_id} deleted successfully"}
+
+
+@app.post("/post/{post_id}/comment")
+def create_comment(post_id: int, comment: Comment):
+
+    def generate_comment_id():
+        while True:
+            comment_id = random.randint(100000, 999999)
+            cursor.execute(
+                "SELECT comment_id FROM comments WHERE comment_id = %s", (comment_id,))
+            if cursor.fetchone() is None:
+                return comment_id
+
+    cursor = conn.cursor()
+    comment_id = generate_comment_id()
+    dummy_comment = cursor.execute("""INSERT INTO comments(name,role,body,post_id,comment_id) VALUES (%s,%s, %s, %s,%s);""", (
+        comment.name, comment.role, comment.body, post_id, comment_id))
+    conn.commit()
+    cursor.close()
+    return {"data": dummy_comment}
+
+
+@app.get("/post/{post_id}/comment")
+def get_all_comments(post_id: int):
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM comments WHERE post_id = %s", (post_id,))
+    comments = cursor.fetchall()
+    cursor.close()
+    if comments:
+        return {"data": comments}
+    else:
+        return {"message": "No comments found for post"}
+
+
+@app.get("/post/{post_id}/comment/{comment_id}")
+def get_comment(post_id: int, comment_id: int):
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM comments WHERE post_id = %s AND comment_id = %s", (post_id, comment_id))
+    comment = cursor.fetchone()
+    cursor.close()
+    if comment:
+        return {"data": comment}
+    else:
+        return {"message": "Comment not found"}
+
+
+@app.post("/post/{post_id}/comment/{comment_id}/reply")
+def create_reply(post_id: int, comment_id: int, reply: Reply):
+    def generate_reply_id():
+        while True:
+            reply_id = random.randint(100000, 999999)
+            cursor.execute(
+                "SELECT reply_id FROM replies WHERE reply_id = %s", (reply_id,))
+            if cursor.fetchone() is None:
+                return reply_id
+    cursor = conn.cursor()
+    reply_id = generate_reply_id()
+    dummy_reply = cursor.execute("""INSERT INTO replies(name,role,body,post_id,comment_id,reply_id) VALUES (%s,%s, %s, %s,%s,%s);""", (
+        reply.name, reply.role, reply.body, post_id, comment_id, reply_id))
+    conn.commit()
+    cursor.close()
+    return {"data": dummy_reply}
+# @app.post("/post/{post_id}/comment/{comment_id}")
+
+
+@app.get("post/{post_id}/comment/{comment_id}/reply")
+def get_reply(post_id: int, comment_id: int):
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM replies WHERE post_id = %s AND comment_id= %s", (post_id, comment_id))
+    replies = cursor.fetchall()
+    cursor.close()
+    if replies:
+        return {"data": replies}
+    else:
+        return {"message": "No comments found for post"}
