@@ -69,7 +69,6 @@ class HeartDiseaseInput(BaseModel):
 class LoginUser(BaseModel):
     email: str
     password: str
-    post_id: int
 
 
 class Post(BaseModel):
@@ -235,6 +234,7 @@ def get_all_posts():
     cursor.execute("SELECT * FROM posts")
     posts = cursor.fetchall()
     cursor.close()
+
     return {"data": posts}
 
 
@@ -324,14 +324,40 @@ def create_reply(post_id: int, comment_id: int, reply: Reply):
 # @app.post("/post/{post_id}/comment/{comment_id}")
 
 
-@app.get("post/{post_id}/comment/{comment_id}/reply")
-def get_reply(post_id: int, comment_id: int):
+# @app.get("post/{post_id}/comment/{comment_id}/reply")
+# def get_reply(post_id: int, comment_id: int):
+#     cursor = conn.cursor()
+#     cursor.execute(
+#         """SELECT * FROM replies WHERE post_id = %s AND comment_id= %s""", (post_id, comment_id))
+#     replies = cursor.fetchall()
+#     cursor.close()
+#     if replies:
+#         return {"data": replies}
+#     else:
+#         return {"message": "No comments found for post"}
+@app.get("/post/{post_id}/comment/{comment_id}/reply/{reply_id}")
+def get_reply(post_id: int, comment_id: int, reply_id: int):
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT * FROM replies WHERE post_id = %s AND comment_id= %s", (post_id, comment_id))
-    replies = cursor.fetchall()
+    cursor.execute("""
+        SELECT name, role, body, post_id, comment_id, reply_id
+        FROM replies
+        WHERE post_id = %s AND comment_id = %s AND reply_id = %s
+    """, (post_id, comment_id, reply_id))
+    reply_data = cursor.fetchone()
     cursor.close()
-    if replies:
-        return {"data": replies}
-    else:
-        return {"message": "No comments found for post"}
+    if reply_data is not None:
+        return {"data": reply_data}
+
+
+@app.get("/post/{post_id}/comment/{comment_id}/reply")
+def get_all_replies(post_id: int, comment_id: int):
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT name, role, body, post_id, comment_id, reply_id
+        FROM replies
+        WHERE post_id = %s AND comment_id = %s
+    """, (post_id, comment_id))
+    reply_data = cursor.fetchall()
+    cursor.close()
+
+    return {"data": reply_data}

@@ -4,7 +4,7 @@ import LottieView from "lottie-react-native";
 
 const VerificationSuccess = ({ navigation }) => {
   const handleContinue = () => {
-    navigation.navigate("");
+    navigation.navigate("Blog");
   };
   return (
     <View style={styles.container}>

@@ -18,7 +18,10 @@ import Profile from "./screens/Profile";
 import AskDoctor from "./screens/AskDoctor";
 import VerifyDoctor from "./screens/VerifyDoctor";
 import VerificationSuccess from "./screens/VerificationSuccess";
-
+import BlogPage from "./screens/BlogPage";
+import AddBlog from "./screens/AddBlog";
+import BlogDetails from "./screens/BlogDetails";
+import Comments from "./screens/Comments";
 export default function App() {
   return (
     <Provider store={store}>
@@ -102,6 +105,51 @@ export default function App() {
             component={VerificationSuccess}
             options={{ headerShown: false }}
           ></Stack.Screen>
+          <Stack.Screen name="Blog" options={{ headerShown: false }}>
+            {() => (
+              <Tab.Navigator>
+                <Tab.Screen
+                  name="Blog Page"
+                  component={BlogPage}
+                  options={{
+                    headerShown: false,
+                    tabBarIcon: ({ color, size }) => (
+                      <Ionicons
+                        name="clipboard-outline"
+                        size={size}
+                        color={color}
+                      />
+                    ),
+                  }}
+                />
+
+                <Tab.Screen
+                  name="Add Blog"
+                  component={AddBlog}
+                  options={{
+                    headerShown: false,
+                    tabBarIcon: ({ color, size }) => (
+                      <Ionicons
+                        name="medkit-outline"
+                        size={size}
+                        color={color}
+                      />
+                    ),
+                  }}
+                />
+              </Tab.Navigator>
+            )}
+          </Stack.Screen>
+          <Stack.Screen
+            name="BlogDetails"
+            component={BlogDetails}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Comments"
+            component={Comments}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

@@ -13,7 +13,7 @@ import IBMPlexSans from "../assets/fonts/IBMPlexSans-Regular.ttf";
 import { Dimensions } from "react-native";
 import { useFonts } from "expo-font";
 import axios from "axios";
-//import AlanButton from "../components/AlanButton";
+import AlanButton from "../components/AlanButton";
 const screenWidth = Dimensions.get("window").width;
 const HeartDiseasePredictorScreen = () => {
   const [age, setAge] = useState("");
@@ -104,7 +104,7 @@ const HeartDiseasePredictorScreen = () => {
         source={require("../assets/HeartDiseaseContainer.png")}
         style={styles.heartDiseaseContainer}
       >
-        {/* <AlanButton /> */}
+        <AlanButton />
         <Text style={styles.heading}>Heart Disease Predictor</Text>
         <ScrollView>
           <View style={styles.Row}>

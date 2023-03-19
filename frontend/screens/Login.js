@@ -24,7 +24,7 @@ const LoginScreen = ({ navigation }) => {
       try {
         dispatch(loginStart());
         const response = await axios.post(
-          "https://c51a-183-82-27-97.in.ngrok.io/login",
+          "https://144f-183-82-204-71.in.ngrok.io/login",
           {
             email: email,
             password: password,

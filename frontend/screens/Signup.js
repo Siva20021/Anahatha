@@ -26,7 +26,7 @@ const Signup = ({ navigation }) => {
       try {
         dispatch(loginStart());
         const response = await axios.post(
-          "https://c51a-183-82-27-97.in.ngrok.io/signup",
+          "https://e1e3-183-82-24-8.in.ngrok.io/signup",
           {
             email: email,
             password: password,
