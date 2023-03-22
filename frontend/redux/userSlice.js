@@ -8,6 +8,7 @@ const initialState = {
   loading: false,
   error: false,
   isLoggedIn: false,
+  doctor: false, // new field
 };
 
 export const userSlice = createSlice({
@@ -24,12 +25,17 @@ export const userSlice = createSlice({
       state.age = action.payload.age;
       state.sex = action.payload.sex;
       state.email = action.payload.email;
+      state.doctor = action.payload.doctor; // set the doctor field
     },
     logout: (state) => {
       return initialState;
     },
+    updateDoctor: (state) => {
+      state.doctor = true;
+    },
   },
 });
 
-export const { loginStart, loginSuccess, logout } = userSlice.actions;
+export const { loginStart, loginSuccess, logout, updateDoctor } =
+  userSlice.actions;
 export default userSlice.reducer;

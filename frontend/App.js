@@ -115,7 +115,7 @@ export default function App() {
                     headerShown: false,
                     tabBarIcon: ({ color, size }) => (
                       <Ionicons
-                        name="clipboard-outline"
+                        name="create-outline"
                         size={size}
                         color={color}
                       />
@@ -130,7 +130,7 @@ export default function App() {
                     headerShown: false,
                     tabBarIcon: ({ color, size }) => (
                       <Ionicons
-                        name="medkit-outline"
+                        name="document-text-outline"
                         size={size}
                         color={color}
                       />

@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Text } from "react-native";
-
+import { AlanView } from "@alan-ai/alan-sdk-react-native";
 const AlanButton = () => {
   return (
     <AlanView

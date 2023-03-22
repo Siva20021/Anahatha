@@ -89,6 +89,12 @@ class Comment(BaseModel):
     replies_count: Optional[int] = 0
 
 
+class Doctor(BaseModel):
+    name: str
+    medical_id: int
+    college: Optional[str]
+
+
 class Reply(BaseModel):
     name: str
     role: str
@@ -96,6 +102,12 @@ class Reply(BaseModel):
     post_id: Optional[int]
     comment_id: Optional[int]
     reply_id: Optional[int]
+
+
+class CheckDoctor(BaseModel):
+    email: str
+    medical_id: str
+    name: str
 
 
 @app.post("/signup")
@@ -135,7 +147,7 @@ def login(user: LoginUser):
 
     # Retrieve user from database
     cursor.execute(
-        "SELECT email, password, age, sex, name FROM users WHERE email=%s", (user.email,))
+        "SELECT email, password, age, sex, name,doctor FROM users WHERE email=%s", (user.email,))
     db_user = cursor.fetchone()
 
     if db_user is None:
@@ -149,7 +161,8 @@ def login(user: LoginUser):
             "email": db_user[0],
             "age": db_user[2],
             "sex": db_user[3],
-            "name": db_user[4]
+            "name": db_user[4],
+            "doctor": db_user[5],
         }
     else:
         raise HTTPException(
@@ -361,3 +374,34 @@ def get_all_replies(post_id: int, comment_id: int):
     cursor.close()
 
     return {"data": reply_data}
+
+
+@app.post("/doctor")
+def enter_doc(doctor: Doctor):
+    cursor = conn.cursor()
+    cursor.execute("""INSERT INTO doctor(name,medical_id,college) VALUES(%s,%s,%s);""", (
+        doctor.name, doctor.medical_id, doctor.college
+    ))
+    conn.commit()
+    cursor.close()
+    return {"data": "Doctor Reborn"}
+
+
+@app.put("/updateDoctor")
+async def update_doctor(check: CheckDoctor):
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM doctor WHERE medical_id = %s AND name = %s", (check.medical_id, check.name))
+    result = cursor.fetchone()
+
+    if result is None:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+
+    cursor.execute(
+        "UPDATE users SET doctor = 'true' WHERE email = %s", (check.email,))
+    conn.commit()
+
+    cursor.close()
+
+    return {"message": f"User with email {check.email} role updated to Doctor"}
